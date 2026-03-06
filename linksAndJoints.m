@@ -108,4 +108,21 @@ for q = linspace(0,2*pi,50)
     zlim([0 2.5]);
     drawnow;
     end
-    %}
+%}
+%interactiveRigidBodyTree(robot)
+
+% Slider 1
+slider = uicontrol('Style','slider',...
+    'Min',0,'Max',4,...
+    'Value',0,...
+    'Position',[150 20 300 20],...
+    'Callback',@(src,event) sliderCallback(src,robot,config));
+
+function sliderCallback(src,robot,config)
+
+    val = src.Value;
+    config(1) = val;
+
+    show(robot,config,'PreservePlot',true);
+
+end
