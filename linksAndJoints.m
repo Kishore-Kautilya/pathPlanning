@@ -8,46 +8,23 @@ c=0;
 % Create rigid body tree
 robot = rigidBodyTree('DataFormat','column','MaxNumBodies',9);
 
-%---------movable base----
-
-%------for x translation-------
-bodyX = rigidBody('base_x');
-jointX = rigidBodyJoint('joint_x','prismatic');
-
-setFixedTransform(jointX, eye(4));
-jointX.JointAxis = [1 0 0];
-
-bodyX.Joint = jointX;
-addBody(robot, bodyX, 'base');
-
-%--------for y translation---------
-bodyY = rigidBody('base_y');
-jointY = rigidBodyJoint('joint_y','prismatic');
-
-setFixedTransform(jointY, eye(4));
-jointY.JointAxis = [0 1 0];
-
-bodyY.Joint = jointY;
-addBody(robot, bodyY, 'base_x');
-
-%-------for rotation of the base-----------
-bodyYaw = rigidBody('base_yaw');
-jointYaw = rigidBodyJoint('joint_yaw','revolute');
-
-setFixedTransform(jointYaw, eye(4));
-jointYaw.JointAxis = [0 0 1];
-
-bodyYaw.Joint = jointYaw;
-addBody(robot, bodyYaw, 'base_y');
 
 % -------- Link 1 --------
 body1 = rigidBody('link1');
-joint1 = rigidBodyJoint('joint1','prismatic');
+joint1 = rigidBodyJoint('joint1');
 
-setFixedTransform(joint1,[0 0 0 0],'dh'); % [a alpha d theta]
-joint1.JointAxis = [0 0 1];
+setFixedTransform(joint1,[0 0 1 0],'dh'); % [a alpha d theta]
 body1.Joint = joint1;
-addBody(robot,body1,'base_yaw');
+addBody(robot,body1,'base');
+
+%
+body1a=rigidBody('link1a');
+joint1a=rigidBodyJoint('joint1a','prismatic');
+body1a.Joint=joint1a;
+setFixedTransform(joint1a,[0,0,0,0],'dh');
+joint1a.JointAxis=[0 0 1];
+addBody(robot,body1a,'base');
+
 
 % -------- Link 2 --------
 body2 = rigidBody('link2');
@@ -72,12 +49,9 @@ addBody(robot,body3,'link2');
 
 config = homeConfiguration(robot);
 
-config(1) = 1;
-config(2) = 0;
-config(3) = c;
-config(4) = 1;
-config(5) = pi/4;
-config(6) = pi/4;
+config(1)=1;
+config(2)=1;
+config(3)=pi;
 
 
 figure;
@@ -126,3 +100,21 @@ function sliderCallback(src,robot,config)
     show(robot,config,'PreservePlot',true);
 
 end
+
+
+% Slider 2
+slider2 = uicontrol('Style','slider',...
+    'Min',0,'Max',4,...
+    'Value',0,...
+    'Position',[152 22 302 22],...
+    'Callback',@(src,event) sliderCallback2(src,robot,config));
+
+function sliderCallback2(src,robot,config)
+
+    val = src.Value;
+    config(2) = val;
+
+    show(robot,config,'PreservePlot',true);
+
+end
+showdetails(robot)
